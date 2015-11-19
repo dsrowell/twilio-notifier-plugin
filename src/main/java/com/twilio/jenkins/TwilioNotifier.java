@@ -32,6 +32,7 @@ import net.sf.json.JSONObject;
 import org.apache.commons.httpclient.HttpClient;
 import org.apache.commons.httpclient.HttpStatus;
 import org.apache.commons.httpclient.methods.GetMethod;
+import org.jenkinsci.plugins.tokenmacro.TokenMacro;
 import org.kohsuke.stapler.DataBoundConstructor;
 import org.kohsuke.stapler.QueryParameter;
 import org.kohsuke.stapler.StaplerRequest;
@@ -333,7 +334,8 @@ public class TwilioNotifier extends Notifier {
                         final String absoluteBuildURL = getDescriptor().getUrl() + build.getUrl();
                         final String messageToSend = substituteAttributes(this.message, substitutionAttributes);
 
-                        final String message = messageToSend;
+                        final String message = TokenMacro.expandAll(build, listener, messageToSend);
+
                         String smsMsg = message;
                         if (this.includeUrl.booleanValue()) {
                             smsMsg += " " + createTinyUrl(absoluteBuildURL);
@@ -360,7 +362,8 @@ public class TwilioNotifier extends Notifier {
                             messageToSend = substituteAttributes(this.culpritMessage, localSubAttrs);
                         }
 
-                        final String message = messageToSend;
+                        final String message = TokenMacro.expandAll(build, listener, messageToSend);
+
                         String smsMsg = message;
                         if (this.includeUrl.booleanValue()) {
                             smsMsg += " " + createTinyUrl(absoluteBuildURL);
